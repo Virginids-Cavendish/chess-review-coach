@@ -20,6 +20,7 @@ import json
 import re
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -98,6 +99,26 @@ def ensure_repo_not_empty(token: str, repo: str, branch: str) -> None:
             {"ref": "refs/heads/{}".format(branch), "sha": ref["object"]["sha"]})
 
 
+def with_retries(action, label: str, attempts: int = 5, delay: float = 2.0):
+    """GitHub 的 Git Data API 对新建 blob 的可见性是最终一致的。
+
+    实测：完全相同的 tree 请求，上一次 422 "not a valid blob"，下一次就成功了。
+    所以每个写操作都重试几次，退避等待。
+    """
+    last = None
+    for attempt in range(1, attempts + 1):
+        try:
+            return action()
+        except SystemExit as error:  # api() 用 SystemExit 报错
+            last = error
+            if attempt == attempts:
+                break
+            wait = delay * (2 ** (attempt - 1))
+            print("    · {} 第 {} 次失败，{:.0f}s 后重试".format(label, attempt, wait))
+            time.sleep(wait)
+    raise last  # type: ignore[misc]
+
+
 def parse_identity(text: str) -> Dict[str, str]:
     match = IDENT.match(text)
     if not match:
@@ -171,6 +192,12 @@ def main() -> int:
 
             def upload(entry: Tuple[str, str, str]) -> Tuple[str, str]:
                 path, _mode, local_sha = entry
+                # 已经存在的 blob 直接复用：既省时间，也顺便确认远端确实有这个对象
+                existing = api(
+                    token, "GET", "/repos/{}/git/blobs/{}".format(repo, local_sha), allow_error=True
+                )
+                if existing.get("sha") == local_sha:
+                    return local_sha, local_sha
                 content = base64.b64encode(run("git", "cat-file", "blob", local_sha)).decode()
                 result = api(
                     token,
@@ -187,28 +214,34 @@ def main() -> int:
                     blob_cache[local_sha] = remote_sha
             print("  [{}] 上传 {} 个新 blob（累计 {}）".format(index, len(missing), len(blob_cache)))
 
-        tree = api(
-            token,
-            "POST",
-            "/repos/{}/git/trees".format(repo),
-            {
-                "tree": [
-                    {"path": path, "mode": mode, "type": "blob", "sha": blob_cache[sha]}
-                    for path, mode, sha in entries
-                ]
-            },
+        tree = with_retries(
+            lambda: api(
+                token,
+                "POST",
+                "/repos/{}/git/trees".format(repo),
+                {
+                    "tree": [
+                        {"path": path, "mode": mode, "type": "blob", "sha": blob_cache[sha]}
+                        for path, mode, sha in entries
+                    ]
+                },
+            ),
+            "创建 tree",
         )
-        created = api(
-            token,
-            "POST",
-            "/repos/{}/git/commits".format(repo),
-            {
-                "message": info["message"],
-                "tree": tree["sha"],
-                "parents": info["parents"],
-                "author": info["author"],
-                "committer": info["committer"],
-            },
+        created = with_retries(
+            lambda: api(
+                token,
+                "POST",
+                "/repos/{}/git/commits".format(repo),
+                {
+                    "message": info["message"],
+                    "tree": tree["sha"],
+                    "parents": info["parents"],
+                    "author": info["author"],
+                    "committer": info["committer"],
+                },
+            ),
+            "创建 commit",
         )
         head_sha = created["sha"]
         flag = "✓ sha 一致" if head_sha == commit else "⚠ sha 不同（本地 {}）".format(commit[:8])
