@@ -387,6 +387,7 @@ class GameAnalyzer:
                 else int(sign * slot.evidence.mate_after)
             )
 
+        engine = slot.evidence
         return MoveAssessment(
             ply=slot.move.ply,
             move_number=slot.move.move_number,
@@ -402,6 +403,14 @@ class GameAnalyzer:
             ),
             evaluation_after=evaluation_after,
             mate_after=mate_after,
+            # 引擎推荐对每一手都保留：只有关键局面才会展开解释，但"应该走什么"人人都有。
+            best_move_san=engine.best_move_san if engine else None,
+            best_move_uci=engine.best_move_uci if engine else None,
+            is_engine_best=bool(engine.is_engine_best) if engine else False,
+            evaluation_before=engine.evaluation_before if engine else None,
+            expected_score_before=(
+                round(engine.expected_score_before, 4) if engine else None
+            ),
             concept_tags=[concept.type for concept in slot.concepts],
             decision_error_tags=[error.type for error in slot.errors],
         )

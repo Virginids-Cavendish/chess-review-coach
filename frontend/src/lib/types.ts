@@ -121,6 +121,12 @@ export interface MoveAssessment {
   expected_score_loss: number | null;
   evaluation_after: number | null;
   mate_after: number | null;
+  /** 引擎推荐：每一手都有，不只是关键局面。只在 fen_before 里合法。 */
+  best_move_san: string | null;
+  best_move_uci: string | null;
+  is_engine_best: boolean;
+  evaluation_before: number | null;
+  expected_score_before: number | null;
   concept_tags: string[];
   decision_error_tags: string[];
   is_critical: boolean;

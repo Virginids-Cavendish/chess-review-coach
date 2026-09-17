@@ -11,6 +11,7 @@ import EvidencePanel from "@/components/EvidencePanel";
 import ExplanationPanel from "@/components/ExplanationPanel";
 import LineWalker, { type LineKind } from "@/components/LineWalker";
 import MoveList from "@/components/MoveList";
+import ProblemMoveList from "@/components/ProblemMoveList";
 import { ApiError, api } from "@/lib/api";
 import { formatLoss, formatPercent, severityLabel, SEVERITY_BADGE } from "@/lib/labels";
 import type {
@@ -149,9 +150,12 @@ export default function GameReviewPage() {
     : -1;
 
   /**
-   * 只有棋盘正好停在这个关键局面的「决策点」时，引擎箭头才画得出来：
-   * solution_uci 是"走子之前"那个局面里的着法，棋子已经落了之后再画就是错的。
+   * 棋盘停在任何一个局面时，棋谱里"从这一步走出去的那一手"就是当前局面的决策手。
+   * 所以实战走法和引擎推荐对**每一手**都能显示——引擎推荐只在走子前的局面里合法，
+   * 这也是不能把它画到走子之后的局面上的原因。
    */
+  const upcomingMove = clampedPosition < maxPly ? moves[clampedPosition] : undefined;
+  /** 棋盘是否正好停在某个关键局面的决策点上（关键局面详情用这个判断）。 */
   const atDecisionPoint =
     selectedMoment !== null && clampedPosition === Math.max(0, selectedMoment.ply - 1);
 
@@ -192,12 +196,13 @@ export default function GameReviewPage() {
     ? nextLineStep
       ? arrowOf(nextLineStep.uci)
       : null
-    : atDecisionPoint && showBestMove && selectedMoment?.solution_uci
-      ? arrowOf(selectedMoment.solution_uci)
+    : showBestMove && upcomingMove?.best_move_uci
+      ? arrowOf(upcomingMove.best_move_uci)
       : null;
+  // 实战走法与引擎推荐相同时只画一个箭头，避免两条线叠在一起
   const boardPlayedArrow =
-    !lineMode && atDecisionPoint && selectedMoment
-      ? { ...arrowOf(selectedMoment.evidence.played_move.uci), color: PLAYED_ARROW_COLOR }
+    !lineMode && upcomingMove && upcomingMove.best_move_uci !== upcomingMove.uci
+      ? { ...arrowOf(upcomingMove.uci), color: PLAYED_ARROW_COLOR }
       : null;
 
   // 自动播放：每次只推进一格，播完自动停下。
@@ -558,25 +563,70 @@ export default function GameReviewPage() {
                 </div>
               ) : null}
             </div>
-          ) : atDecisionPoint && selectedMoment ? (
+          ) : upcomingMove ? (
             <div className="panel-soft p-3 text-xs">
               <div className="flex items-center justify-between gap-2">
-                <span>第 {selectedMoment.move_number} 手 · 你在这里走</span>
-                <span
-                  className={`rounded px-1.5 py-0.5 ring-1 ${SEVERITY_BADGE[selectedMoment.severity]}`}
+                <span>
+                  第 {upcomingMove.move_number} 手 ·{" "}
+                  {upcomingMove.is_player_move ? "你在这里走" : "对手在这里走"}
+                </span>
+                {upcomingMove.severity ? (
+                  <span
+                    className={`rounded px-1.5 py-0.5 ring-1 ${SEVERITY_BADGE[upcomingMove.severity]}`}
+                  >
+                    {severityLabel(upcomingMove.severity)}
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="mt-1.5 space-y-1">
+                <div>
+                  实战：<span className="mono">{upcomingMove.san}</span>
+                  {upcomingMove.is_engine_best ? (
+                    <span className="text-emerald-300"> · 就是引擎首选</span>
+                  ) : null}
+                </div>
+                {!upcomingMove.is_engine_best ? (
+                  <div>
+                    引擎推荐：
+                    <span className="mono text-sky-300">
+                      {" "}
+                      {upcomingMove.best_move_san ?? "—"}
+                    </span>
+                    {upcomingMove.best_move_uci && showBestMove ? (
+                      <span style={{ color: "var(--muted)" }}>（棋盘上蓝色箭头）</span>
+                    ) : null}
+                  </div>
+                ) : null}
+                {upcomingMove.expected_score_loss !== null &&
+                upcomingMove.expected_score_loss > 0 ? (
+                  <div style={{ color: "var(--muted)" }}>
+                    期望得分损失{" "}
+                    <span className="mono">{formatLoss(upcomingMove.expected_score_loss)}</span>
+                  </div>
+                ) : null}
+              </div>
+
+              {upcomingMove.is_critical ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const index = moments.findIndex(
+                      (moment) => moment.ply === upcomingMove.ply,
+                    );
+                    if (index >= 0) goToMoment(index);
+                  }}
+                  className="mt-2 rounded border px-2 py-1 text-sky-300"
+                  style={{ borderColor: "var(--border)" }}
                 >
-                  {severityLabel(selectedMoment.severity)}
-                </span>
-              </div>
-              <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
-                <span>
-                  实战：<span className="mono">{selectedMoment.played_move_san}</span>
-                </span>
-                <span>
-                  引擎推荐：
-                  <span className="mono text-sky-300"> {selectedMoment.solution_san ?? "—"}</span>
-                </span>
-              </div>
+                  看这个局面的完整解释 ↓
+                </button>
+              ) : upcomingMove.severity && upcomingMove.severity !== "best" &&
+                upcomingMove.severity !== "excellent" && upcomingMove.severity !== "good" ? (
+                <p className="mt-2" style={{ color: "var(--muted)" }}>
+                  这一手不在关键局面清单里：只给引擎推荐，不生成 AI 解释。
+                </p>
+              ) : null}
             </div>
           ) : lastPlayedMove?.severity ? (
             <div className="panel-soft p-3 text-xs">
@@ -597,6 +647,19 @@ export default function GameReviewPage() {
               </div>
             </div>
           ) : null}
+
+          <label
+            className="flex items-center gap-2 px-1 text-xs"
+            style={{ color: "var(--muted)" }}
+          >
+            <input
+              type="checkbox"
+              checked={showBestMove}
+              onChange={(event) => setShowBestMove(event.target.checked)}
+            />
+            在棋盘上显示引擎推荐走法（每一手都可以看）
+          </label>
+
         </section>
 
         <section className="space-y-4">
@@ -641,8 +704,6 @@ export default function GameReviewPage() {
                         moment={moment}
                         engineName={review.engine.engine_name}
                         atDecisionPoint={atDecisionPoint}
-                        showBestMove={showBestMove}
-                        onToggleBestMove={setShowBestMove}
                         onJumpBack={() => setPositionIndex(Math.max(0, moment.ply - 1))}
                         explanation={explanations[moment.ply]}
                         llmConfigured={review.llm_available}
@@ -672,6 +733,17 @@ export default function GameReviewPage() {
               </div>
             )}
           </div>
+
+          <ProblemMoveList
+            moves={moves}
+            selectedPly={selectedPly}
+            onSelect={(ply) => {
+              exitWalkthrough();
+              setPositionIndex(ply);
+              const index = moments.findIndex((moment) => moment.ply === ply);
+              if (index >= 0) setSelectedPly(ply);
+            }}
+          />
         </section>
       </div>
     </div>
@@ -682,8 +754,6 @@ interface MomentDetailProps {
   moment: CriticalMoment;
   engineName: string;
   atDecisionPoint: boolean;
-  showBestMove: boolean;
-  onToggleBestMove: (value: boolean) => void;
   onJumpBack: () => void;
   explanation: ExplanationState | undefined;
   llmConfigured: boolean;
@@ -706,8 +776,6 @@ function MomentDetail({
   moment,
   engineName,
   atDecisionPoint,
-  showBestMove,
-  onToggleBestMove,
   onJumpBack,
   explanation,
   llmConfigured,
@@ -726,16 +794,8 @@ function MomentDetail({
 }: MomentDetailProps) {
   return (
     <div className="mt-2 space-y-3 border-l-2 pl-3" style={{ borderColor: "var(--border)" }}>
-      <div className="flex flex-wrap items-center gap-3 text-xs">
-        <label className="flex items-center gap-2" style={{ color: "var(--muted)" }}>
-          <input
-            type="checkbox"
-            checked={showBestMove}
-            onChange={(event) => onToggleBestMove(event.target.checked)}
-          />
-          在棋盘上显示引擎推荐走法
-        </label>
-        {atDecisionPoint ? null : (
+      {atDecisionPoint ? null : (
+        <div className="text-xs">
           <button
             type="button"
             onClick={onJumpBack}
@@ -744,8 +804,8 @@ function MomentDetail({
           >
             把棋盘移回这个局面
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <p className="text-sm leading-relaxed">{moment.one_liner_zh}</p>
 

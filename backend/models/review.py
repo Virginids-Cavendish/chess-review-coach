@@ -43,7 +43,12 @@ CRITICALITY_REASON_LABELS_ZH = {
 
 
 class MoveAssessment(BaseModel):
-    """Lightweight per-ply record backing the move list and the eval graph."""
+    """Lightweight per-ply record backing the move list and the eval graph.
+
+    ``best_move_*`` is filled for **every** move, not just the critical ones: the review
+    always shows what the engine wanted, and only the critical few get a full
+    explanation. ``best_move_uci`` is legal in ``fen_before`` — never in ``fen_after``.
+    """
 
     ply: int
     move_number: int
@@ -58,6 +63,14 @@ class MoveAssessment(BaseModel):
     # Evaluation of the position *after* this move, player perspective.
     evaluation_after: Optional[float] = None
     mate_after: Optional[int] = None
+    # --- engine recommendation for the position this move was played in ---
+    best_move_san: Optional[str] = None
+    best_move_uci: Optional[str] = None
+    #: True when the move played *is* the engine's first choice.
+    is_engine_best: bool = False
+    #: Evaluation of the position before the move (player perspective).
+    evaluation_before: Optional[float] = None
+    expected_score_before: Optional[float] = None
     concept_tags: List[ConceptType] = Field(default_factory=list)
     decision_error_tags: List[DecisionErrorType] = Field(default_factory=list)
     is_critical: bool = False

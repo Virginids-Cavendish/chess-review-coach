@@ -120,6 +120,47 @@ def test_quiet_game_produces_no_invented_critical_moments(engine):
 
 
 @requires_engine
+def test_every_move_carries_a_legal_engine_recommendation(engine):
+    """每一手都要有引擎推荐，而且这个推荐必须在"走子之前"的局面里合法。
+
+    这正是复盘页上出过的那类错误：把"走子前"的推荐画到"走子后"的局面上，
+    箭头指向一个根本走不了的着法。
+    """
+    import chess
+
+    game = parse_pgn(LEGAL_GAME, player_color=Color.WHITE)
+    review = GameAnalyzer(engine, cache=InMemoryCache(), config=FAST_CONFIG).analyze(
+        game, "test-best-moves"
+    )
+
+    assert review.moves
+    for move in review.moves:
+        assert move.best_move_san, "第 {} 手缺少引擎推荐".format(move.ply)
+        assert move.best_move_uci, "第 {} 手缺少引擎推荐（uci）".format(move.ply)
+
+        board = chess.Board(move.fen_before)
+        legal = {candidate.uci() for candidate in board.legal_moves}
+        assert move.best_move_uci in legal, (
+            "第 {} 手的引擎推荐 {} 在走子前的局面里不合法".format(move.ply, move.best_move_uci)
+        )
+
+        # 顺带确认：实战走法在同一个局面里当然也是合法的
+        assert move.uci in legal
+
+
+@requires_engine
+def test_best_move_is_marked_when_the_player_followed_it(engine):
+    game = parse_pgn(LEGAL_GAME, player_color=Color.WHITE)
+    review = GameAnalyzer(engine, cache=InMemoryCache(), config=FAST_CONFIG).analyze(
+        game, "test-engine-best-flag"
+    )
+    followed = [m for m in review.moves if m.is_engine_best]
+    assert followed, "正常开局里总该有几手就是引擎首选"
+    for move in followed:
+        assert move.best_move_san == move.san
+
+
+@requires_engine
 def test_second_run_is_served_from_the_cache(engine):
     cache = InMemoryCache()
     game = parse_pgn(LEGAL_GAME, player_color=Color.WHITE)

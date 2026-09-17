@@ -47,6 +47,13 @@ export default function MoveList({ moves, currentPly, onSelect }: MoveListProps)
                       <button
                         type="button"
                         onClick={() => onSelect(move.ply)}
+                        title={
+                          move.best_move_san
+                            ? move.is_engine_best
+                              ? "引擎首选就是这一手"
+                              : "引擎推荐 " + move.best_move_san
+                            : undefined
+                        }
                         className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left transition ${
                           currentPly === move.ply ? "bg-slate-700/60" : "hover:bg-slate-800/60"
                         }`}
