@@ -1,0 +1,34 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# --- Local data & secrets ---
+.env
+.env.local
+*.db
+*.db-journal
+data/
+*.sqlite3
+
+# --- Vendored engine (installed by scripts/install_stockfish.py, ~105 MB) ---
+# 整个目录都不提交：克隆后由安装脚本自动下载，许可证文件也由脚本一并放进去。
+backend/engine/bin/
+
+# --- Local npm cache (kept inside the repo because ~/.npm may be read-only) ---
+.npm-cache/
+
+# --- OS noise ---
+.DS_Store

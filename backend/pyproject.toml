@@ -1,0 +1,15 @@
+[project]
+name = "chess-coach-backend"
+version = "0.1.0"
+description = "Explainable chess review backend: Stockfish evidence + deterministic concepts + grounded LLM coaching"
+requires-python = ">=3.9"
+
+[tool.pytest.ini_options]
+# Top-level packages (api, engine, analysis, concepts, coaching, storage, models) live directly
+# under backend/, so backend/ must be importable when running pytest from this directory.
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = [
+    "ignore::DeprecationWarning:websockets.*",
+]
