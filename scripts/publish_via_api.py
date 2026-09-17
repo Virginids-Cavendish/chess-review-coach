@@ -16,8 +16,10 @@
 from __future__ import annotations
 
 import base64
+import http.client
 import json
 import re
+import socket
 import subprocess
 import sys
 import time
@@ -67,6 +69,9 @@ def api(
         if allow_error:
             return {"__status": error.code, "__detail": detail}
         raise SystemExit("API {} {} 失败: HTTP {} {}".format(method, path, error.code, detail))
+    except (urllib.error.URLError, socket.timeout, ConnectionError, http.client.HTTPException) as error:
+        # 网络抖动（SSL EOF、连接被重置等）也会走重试逻辑
+        raise SystemExit("API {} {} 网络错误: {}".format(method, path, error))
 
 
 def ensure_repo_not_empty(token: str, repo: str, branch: str) -> None:
@@ -199,11 +204,16 @@ def main() -> int:
                 if existing.get("sha") == local_sha:
                     return local_sha, local_sha
                 content = base64.b64encode(run("git", "cat-file", "blob", local_sha)).decode()
-                result = api(
-                    token,
-                    "POST",
-                    "/repos/{}/git/blobs".format(repo),
-                    {"content": content, "encoding": "base64"},
+                result = with_retries(
+                    lambda: api(
+                        token,
+                        "POST",
+                        "/repos/{}/git/blobs".format(repo),
+                        {"content": content, "encoding": "base64"},
+                    ),
+                    "上传 {}".format(path),
+                    attempts=4,
+                    delay=1.5,
                 )
                 if result["sha"] != local_sha:
                     raise SystemExit("blob 校验失败: {}".format(path))
@@ -247,14 +257,25 @@ def main() -> int:
         flag = "✓ sha 一致" if head_sha == commit else "⚠ sha 不同（本地 {}）".format(commit[:8])
         print("  [{}] commit {} {}".format(index, head_sha[:8], flag))
 
-    existing = api(token, "GET", "/repos/{}/git/ref/heads/{}".format(repo, branch), allow_error=True)
+    existing = with_retries(
+        lambda: api(token, "GET", "/repos/{}/git/ref/heads/{}".format(repo, branch), allow_error=True),
+        "读取分支",
+        attempts=6,
+        delay=3.0,
+    )
     if existing.get("__status") == 404:
-        api(token, "POST", "/repos/{}/git/refs".format(repo),
-            {"ref": "refs/heads/{}".format(branch), "sha": head_sha})
+        with_retries(
+            lambda: api(token, "POST", "/repos/{}/git/refs".format(repo),
+                        {"ref": "refs/heads/{}".format(branch), "sha": head_sha}),
+            "创建分支", attempts=6, delay=3.0,
+        )
     else:
-        # 强制指向我们的历史：引导提交会变成不可达对象，不进历史
-        api(token, "PATCH", "/repos/{}/git/refs/heads/{}".format(repo, branch),
-            {"sha": head_sha, "force": True})
+        # 指向我们的历史。新提交在 GitHub 上可能需要几秒才可见，所以这里必须重试。
+        with_retries(
+            lambda: api(token, "PATCH", "/repos/{}/git/refs/heads/{}".format(repo, branch),
+                        {"sha": head_sha, "force": True}),
+            "更新分支", attempts=6, delay=3.0,
+        )
     api(token, "PATCH", "/repos/{}".format(repo), {"default_branch": branch})
     print("\n  ✓ refs/heads/{} -> {}（并设为默认分支）".format(branch, head_sha[:8]))
 
