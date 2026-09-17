@@ -41,7 +41,9 @@ def gh_token() -> str:
     ).stdout.strip()
 
 
-def api(token: str, method: str, path: str, payload: dict | None = None) -> dict:
+def api(
+    token: str, method: str, path: str, payload: dict | None = None, allow_error: bool = False
+) -> dict:
     data = json.dumps(payload).encode() if payload is not None else None
     request = urllib.request.Request(
         API + path,
@@ -61,7 +63,39 @@ def api(token: str, method: str, path: str, payload: dict | None = None) -> dict
         return json.loads(body) if body.strip() else {}
     except urllib.error.HTTPError as error:
         detail = error.read().decode()[:500]
+        if allow_error:
+            return {"__status": error.code, "__detail": detail}
         raise SystemExit("API {} {} 失败: HTTP {} {}".format(method, path, error.code, detail))
+
+
+def ensure_repo_not_empty(token: str, repo: str, branch: str) -> None:
+    """GitHub 的 Git Data API 在一个完全空的仓库上会返回 409。
+
+    解决办法：先用 Contents API 建一个占位文件（这是官方推荐的"创建第一个提交"的方式），
+    让仓库不再是 empty；稍后我们会把分支强制指向真正的提交，占位提交就变成不可达对象，
+    不会出现在仓库历史里。
+    """
+    probe = api(token, "POST", "/repos/{}/git/blobs".format(repo),
+                {"content": "cHJvYmU=", "encoding": "base64"}, allow_error=True)
+    if probe.get("__status") != 409:
+        return  # 仓库已经不为空，无需处理
+
+    info = api(token, "GET", "/repos/{}".format(repo))
+    default_branch = info.get("default_branch") or branch
+    print("  仓库还是空的，先用 Contents API 建一个引导提交（之后会被覆盖）")
+    api(token, "PUT", "/repos/{}/contents/{}".format(repo, ".publish-bootstrap"),
+        {
+            "message": "chore: bootstrap repository for API publishing",
+            "content": base64.b64encode(
+                "这个文件只是为了让 Git Data API 能在空仓库上工作，稍后会被真正的提交覆盖。\n".encode()
+            ).decode(),
+            "branch": default_branch,
+        })
+    if default_branch != branch:
+        # 引导提交落在默认分支上，先把目标分支建出来
+        ref = api(token, "GET", "/repos/{}/git/ref/heads/{}".format(repo, default_branch))
+        api(token, "POST", "/repos/{}/git/refs".format(repo),
+            {"ref": "refs/heads/{}".format(branch), "sha": ref["object"]["sha"]})
 
 
 def parse_identity(text: str) -> Dict[str, str]:
@@ -177,13 +211,18 @@ def main() -> int:
         flag = "✓ sha 一致" if head_sha == commit else "⚠ sha 不同（本地 {}）".format(commit[:8])
         print("  [{}] commit {} {}".format(index, head_sha[:8], flag))
 
-    api(
-        token,
-        "POST",
-        "/repos/{}/git/refs".format(repo),
-        {"ref": "refs/heads/{}".format(branch), "sha": head_sha},
-    )
-    print("\n  ✓ refs/heads/{} -> {}".format(branch, head_sha[:8]))
+    ensure_repo_not_empty(token, repo, branch)
+
+    existing = api(token, "GET", "/repos/{}/git/ref/heads/{}".format(repo, branch), allow_error=True)
+    if existing.get("__status") == 404:
+        api(token, "POST", "/repos/{}/git/refs".format(repo),
+            {"ref": "refs/heads/{}".format(branch), "sha": head_sha})
+    else:
+        # 强制指向我们的历史：引导提交会变成不可达对象，不进历史
+        api(token, "PATCH", "/repos/{}/git/refs/heads/{}".format(repo, branch),
+            {"sha": head_sha, "force": True})
+    api(token, "PATCH", "/repos/{}".format(repo), {"default_branch": branch})
+    print("\n  ✓ refs/heads/{} -> {}（并设为默认分支）".format(branch, head_sha[:8]))
 
     # 让本地也知道远端已经同步，这样 git status 不会显示成"落后"
     subprocess.run(
