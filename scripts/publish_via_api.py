@@ -158,6 +158,9 @@ def main() -> int:
     blob_cache: Dict[str, str] = {}
     print("镜像 {} 个提交到 {} 的 {} 分支\n".format(len(commits), repo, branch))
 
+    # 必须在任何 blob 上传之前做：空仓库上 Git Data API 一律返回 409
+    ensure_repo_not_empty(token, repo, branch)
+
     head_sha = ""
     for index, commit in enumerate(commits, start=1):
         info = read_commit(commit)
@@ -210,8 +213,6 @@ def main() -> int:
         head_sha = created["sha"]
         flag = "✓ sha 一致" if head_sha == commit else "⚠ sha 不同（本地 {}）".format(commit[:8])
         print("  [{}] commit {} {}".format(index, head_sha[:8], flag))
-
-    ensure_repo_not_empty(token, repo, branch)
 
     existing = api(token, "GET", "/repos/{}/git/ref/heads/{}".format(repo, branch), allow_error=True)
     if existing.get("__status") == 404:
