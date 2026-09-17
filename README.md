@@ -647,7 +647,16 @@ cd frontend && npm run check:api
 
 ---
 
-## 12. 许可证说明
+## 12. 许可证
 
-Stockfish 使用 GPL-3.0 许可。安装脚本会下载官方二进制文件，并把 `Copying.txt` 和 `AUTHORS`
-一起复制到 `backend/engine/bin/`。二进制文件本身**不会**提交到仓库里。
+本项目使用 **MIT 许可**，完整文本见 [LICENSE](LICENSE)。
+
+### 关于 Stockfish（GPL-3.0）
+
+Stockfish 与本项目的许可**是分开的两件事**：
+
+* 本仓库**不包含** Stockfish 二进制文件，只包含一个下载脚本；
+* `backend/scripts/install_stockfish.py` 会把官方二进制下载到 `backend/engine/bin/`，
+  并把它的 `Copying.txt`、`AUTHORS` 一并放在那里；
+* 所以你分发**本项目的代码**时，遵守 MIT 即可；如果连同 Stockfish 二进制一起分发，
+  那一部分需要遵守 GPL-3.0（附上许可证并提供对应源码）。
