@@ -10,6 +10,7 @@ import EvalBar from "@/components/EvalBar";
 import EvidencePanel from "@/components/EvidencePanel";
 import ExplanationPanel from "@/components/ExplanationPanel";
 import LineWalker, { type LineKind } from "@/components/LineWalker";
+import HumanExplorerPanel from "@/components/HumanExplorerPanel";
 import MoveList from "@/components/MoveList";
 import ProblemMoveList from "@/components/ProblemMoveList";
 import { ApiError, api } from "@/lib/api";
@@ -246,6 +247,8 @@ export default function GameReviewPage() {
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
+      // Arrow keys edit filters and form fields without moving the chessboard.
+      if (event.target instanceof Element && event.target.closest("input, select, textarea, [contenteditable=true]")) return;
       if (event.key === "Escape" && lineMode) {
         exitWalkthrough();
         return;
@@ -315,7 +318,7 @@ export default function GameReviewPage() {
 
   // 决策点上用关键局面自己的引擎数据；其它位置用所在局面的数据。
   const evalView =
-    atDecisionPoint && selectedMoment
+    (lineMode || atDecisionPoint) && selectedMoment
       ? {
           evaluation: selectedMoment.evidence.engine.evaluation_before,
           mate: selectedMoment.evidence.engine.mate_before,
@@ -411,8 +414,9 @@ export default function GameReviewPage() {
               </ul>
             ) : null}
             <p className="mt-2 text-[11px]" style={{ color: "var(--muted)" }}>
-              该总结只使用了上面已经确认过的失误清单，不会重新评估任何局面。
+              总结依据已确认的失误清单生成，教学解释仍需结合引擎证据核对。
             </p>
+            {summary.validation_warnings?.map((warning) => <p key={warning} className="mt-2 text-xs text-amber-200">{warning}</p>)}
           </div>
         ) : null}
       </section>
@@ -539,7 +543,7 @@ export default function GameReviewPage() {
             mate={evalView.mate}
             expectedScore={evalView.expected}
             orientation={review.player_color}
-            label={atDecisionPoint ? "走子前评估（你的一方）" : "局面评估（你的一方）"}
+            label={lineMode ? "线路起点的评估（你的一方）" : atDecisionPoint ? "走子前评估（你的一方）" : "局面评估（你的一方）"}
           />
 
           {lineMode && activeLine ? (
@@ -548,8 +552,8 @@ export default function GameReviewPage() {
                 <span>
                   {currentLineStep
                     ? `第 ${
-                        (selectedMoment?.move_number ?? 1) +
-                        Math.floor(Math.max(0, lineMode.index - 1) / 2)
+                        Number(currentLineStep.fen_after.split(" ")[5]) -
+                        (currentLineStep.mover === "black" ? 1 : 0)
                       } 手 · ${currentLineStep.mover === "white" ? "白方" : "黑方"}走 ${
                         currentLineStep.san
                       }`
@@ -660,6 +664,8 @@ export default function GameReviewPage() {
             在棋盘上显示引擎推荐走法（每一手都可以看）
           </label>
 
+          <HumanExplorerPanel fen={boardFen} playedMove={lineMode ? undefined : upcomingMove?.uci}
+            bestMove={lineMode ? undefined : upcomingMove?.best_move_uci} />
         </section>
 
         <section className="space-y-4">

@@ -32,6 +32,13 @@ from sqlalchemy.orm import declarative_base, relationship
 Base = declarative_base()
 
 
+class ExplorerCacheEntry(Base):
+    __tablename__ = "explorer_cache"
+    cache_key = Column(String(64), primary_key=True)
+    fetched_at = Column(DateTime, nullable=False, index=True)
+    payload = Column(JSON, nullable=False)
+
+
 def _utcnow() -> datetime:
     return datetime.utcnow()
 

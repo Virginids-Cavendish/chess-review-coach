@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node scripts/reset-dev-lock.mjs && next dev --port ${PORT:-3000}",
+    "dev": "node scripts/start-next.mjs dev",
     "build": "next build",
-    "start": "next start --port 3000",
+    "start": "node scripts/start-next.mjs start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "check:api": "node scripts/check-api-contract.mjs",
-    "dev:clean": "rm -rf .next && next dev --port ${PORT:-3000}"
+    "dev:clean": "node scripts/start-next.mjs dev --clean"
   },
   "dependencies": {
     "next": "16.3.5",

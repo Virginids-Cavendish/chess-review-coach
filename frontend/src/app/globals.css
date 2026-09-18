@@ -95,3 +95,12 @@ select {
 ::selection {
   background: rgba(79, 156, 249, 0.35);
 }
+
+.human-explorer :is(button, a, select, input, summary):focus-visible {
+  outline: 2px solid var(--engine);
+  outline-offset: 3px;
+}
+
+.human-explorer input[type="month"] {
+  color-scheme: dark;
+}

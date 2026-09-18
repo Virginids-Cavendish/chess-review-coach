@@ -18,6 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from api.routes import router
+from api.lichess import router as lichess_router
 from api.service import get_service
 from config import settings
 from engine.errors import EngineError
@@ -66,6 +67,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(router)
+    app.include_router(lichess_router)
 
     @app.exception_handler(EngineError)
     async def engine_error_handler(_request: Request, exc: EngineError) -> JSONResponse:
