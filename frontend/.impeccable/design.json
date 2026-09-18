@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-18T23:37:46.262Z",
+  "title": "Design System: 国际象棋复盘教练 · 复盘界面",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "夜蓝底色",
+        "tonalRamp": [
+          "oklch(15.0% 0.0309 263.383)",
+          "oklch(26.4% 0.0309 263.383)",
+          "oklch(37.9% 0.0309 263.383)",
+          "oklch(49.3% 0.0309 263.383)",
+          "oklch(60.7% 0.0309 263.383)",
+          "oklch(72.1% 0.0309 263.383)",
+          "oklch(83.6% 0.0309 263.383)",
+          "oklch(95.0% 0.0309 263.383)"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "分析面板",
+        "tonalRamp": [
+          "oklch(15.0% 0.0362 262.456)",
+          "oklch(26.4% 0.0362 262.456)",
+          "oklch(37.9% 0.0362 262.456)",
+          "oklch(49.3% 0.0362 262.456)",
+          "oklch(60.7% 0.0362 262.456)",
+          "oklch(72.1% 0.0362 262.456)",
+          "oklch(83.6% 0.0362 262.456)",
+          "oklch(95.0% 0.0362 262.456)"
+        ]
+      },
+      "panel-soft": {
+        "role": "neutral",
+        "displayName": "内层面板",
+        "tonalRamp": [
+          "oklch(15.0% 0.0487 263.185)",
+          "oklch(26.4% 0.0487 263.185)",
+          "oklch(37.9% 0.0487 263.185)",
+          "oklch(49.3% 0.0487 263.185)",
+          "oklch(60.7% 0.0487 263.185)",
+          "oklch(72.1% 0.0487 263.185)",
+          "oklch(83.6% 0.0487 263.185)",
+          "oklch(95.0% 0.0487 263.185)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "边界蓝灰",
+        "tonalRamp": [
+          "oklch(15.0% 0.0518 264.032)",
+          "oklch(26.4% 0.0518 264.032)",
+          "oklch(37.9% 0.0518 264.032)",
+          "oklch(49.3% 0.0518 264.032)",
+          "oklch(60.7% 0.0518 264.032)",
+          "oklch(72.1% 0.0518 264.032)",
+          "oklch(83.6% 0.0518 264.032)",
+          "oklch(95.0% 0.0518 264.032)"
+        ]
+      },
+      "text": {
+        "role": "neutral",
+        "displayName": "浅色正文",
+        "tonalRamp": [
+          "oklch(15.0% 0.0145 264.497)",
+          "oklch(26.4% 0.0145 264.497)",
+          "oklch(37.9% 0.0145 264.497)",
+          "oklch(49.3% 0.0145 264.497)",
+          "oklch(60.7% 0.0145 264.497)",
+          "oklch(72.1% 0.0145 264.497)",
+          "oklch(83.6% 0.0145 264.497)",
+          "oklch(95.0% 0.0145 264.497)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "辅助蓝灰",
+        "tonalRamp": [
+          "oklch(15.0% 0.0440 264.240)",
+          "oklch(26.4% 0.0440 264.240)",
+          "oklch(37.9% 0.0440 264.240)",
+          "oklch(49.3% 0.0440 264.240)",
+          "oklch(60.7% 0.0440 264.240)",
+          "oklch(72.1% 0.0440 264.240)",
+          "oklch(83.6% 0.0440 264.240)",
+          "oklch(95.0% 0.0440 264.240)"
+        ]
+      },
+      "engine": {
+        "role": "primary",
+        "displayName": "引擎蓝",
+        "tonalRamp": [
+          "oklch(15.0% 0.1575 254.602)",
+          "oklch(26.4% 0.1575 254.602)",
+          "oklch(37.9% 0.1575 254.602)",
+          "oklch(49.3% 0.1575 254.602)",
+          "oklch(60.7% 0.1575 254.602)",
+          "oklch(72.1% 0.1575 254.602)",
+          "oklch(83.6% 0.1575 254.602)",
+          "oklch(95.0% 0.1575 254.602)"
+        ]
+      },
+      "coach": {
+        "role": "secondary",
+        "displayName": "教练金",
+        "tonalRamp": [
+          "oklch(15.0% 0.1295 79.849)",
+          "oklch(26.4% 0.1295 79.849)",
+          "oklch(37.9% 0.1295 79.849)",
+          "oklch(49.3% 0.1295 79.849)",
+          "oklch(60.7% 0.1295 79.849)",
+          "oklch(72.1% 0.1295 79.849)",
+          "oklch(83.6% 0.1295 79.849)",
+          "oklch(95.0% 0.1295 79.849)"
+        ]
+      },
+      "outcome-white": {
+        "role": "neutral",
+        "displayName": "白方浅色",
+        "tonalRamp": [
+          "oklch(15.0% 0.0070 247.896)",
+          "oklch(26.4% 0.0070 247.896)",
+          "oklch(37.9% 0.0070 247.896)",
+          "oklch(49.3% 0.0070 247.896)",
+          "oklch(60.7% 0.0070 247.896)",
+          "oklch(72.1% 0.0070 247.896)",
+          "oklch(83.6% 0.0070 247.896)",
+          "oklch(95.0% 0.0070 247.896)"
+        ]
+      },
+      "outcome-draw": {
+        "role": "neutral",
+        "displayName": "和棋灰色",
+        "tonalRamp": [
+          "oklch(15.0% 0.0400 256.788)",
+          "oklch(26.4% 0.0400 256.788)",
+          "oklch(37.9% 0.0400 256.788)",
+          "oklch(49.3% 0.0400 256.788)",
+          "oklch(60.7% 0.0400 256.788)",
+          "oklch(72.1% 0.0400 256.788)",
+          "oklch(83.6% 0.0400 256.788)",
+          "oklch(95.0% 0.0400 256.788)"
+        ]
+      },
+      "outcome-black": {
+        "role": "neutral",
+        "displayName": "黑方深色",
+        "tonalRamp": [
+          "oklch(15.0% 0.0410 260.031)",
+          "oklch(26.4% 0.0410 260.031)",
+          "oklch(37.9% 0.0410 260.031)",
+          "oklch(49.3% 0.0410 260.031)",
+          "oklch(60.7% 0.0410 260.031)",
+          "oklch(72.1% 0.0410 260.031)",
+          "oklch(83.6% 0.0410 260.031)",
+          "oklch(95.0% 0.0410 260.031)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "title": {
+        "displayName": "页面标题",
+        "purpose": "应用及复盘页标题，保持功能性小标题层级。"
+      },
+      "body": {
+        "displayName": "正文",
+        "purpose": "内容、状态与面板标题；连续解释使用较松行高。"
+      },
+      "label": {
+        "displayName": "标签",
+        "purpose": "筛选、表头、比例和辅助信息。"
+      },
+      "notation": {
+        "displayName": "棋谱",
+        "purpose": "走法列表中的 SAN。"
+      }
+    },
+    "shadows": [],
+    "motion": [],
+    "breakpoints": [
+      {
+        "name": "evidence-columns",
+        "value": "40rem"
+      },
+      {
+        "name": "review-columns",
+        "value": "64rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "刷新统计",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "真人统计区域的普通操作。",
+      "html": "<button class=\"ds-refresh\">刷新统计</button>",
+      "css": ".ds-refresh{border:1px solid var(--border,#24314c);border-radius:0.25rem;padding:0.5rem 0.75rem;background:transparent;color:var(--text,#e6ebf5);font:400 0.75rem/1rem -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Segoe UI\",Roboto,sans-serif;cursor:pointer;}.ds-refresh:hover{background:var(--panel-soft,#16223a)}.ds-refresh:focus-visible{outline:2px solid var(--engine,#4f9cf9);outline-offset:3px;}.ds-refresh:disabled{opacity:0.5;cursor:not-allowed}"
+    },
+    {
+      "name": "连接 Lichess",
+      "kind": "button",
+      "description": "缺少授权时显示的链接操作。示例链接仅作视觉预览。",
+      "html": "<a class=\"ds-connect\" href=\"#preview\">连接 Lichess</a>",
+      "css": ".ds-connect{display:inline-block;border:1px solid var(--border,#24314c);border-radius:0.25rem;padding:0.5rem 0.75rem;background:transparent;color:var(--text,#e6ebf5);font:400 0.75rem/1rem -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Segoe UI\",Roboto,sans-serif;cursor:pointer;border-color:var(--engine,#4f9cf9);color:var(--color-sky-200,oklch(90.1% 0.058 230.902));font-size:0.875rem;line-height:1.625;text-decoration:none}.ds-connect:hover{background:var(--panel-soft,#16223a)}.ds-connect:focus-visible{outline:2px solid var(--engine,#4f9cf9);outline-offset:3px;}"
+    },
+    {
+      "name": "带标签的筛选框",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "选择框和月份输入共用边框、填色和焦点规则。",
+      "html": "<label class=\"ds-label\">等级分分组<select class=\"ds-field\"><option>1200–1799</option><option>全部等级分</option></select></label>",
+      "css": ".ds-label{display:block;color:var(--muted,#93a1bd);font:400 0.75rem/1rem -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Segoe UI\",Roboto,sans-serif}.ds-field{display:block;margin-top:0.25rem;width:100%;min-width:0;border:1px solid var(--border,#24314c);border-radius:0.25rem;padding:0.5rem;background:var(--panel-soft,#16223a);color:var(--text,#e6ebf5);font:400 0.75rem/1rem -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Segoe UI\",Roboto,sans-serif}.ds-field:focus-visible{outline:2px solid var(--engine,#4f9cf9);outline-offset:3px;}"
+    },
+    {
+      "name": "来源标签",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "继承现有胶囊标签及引擎、教练变体。",
+      "html": "<span class=\"ds-tag\">关键局面</span> <span class=\"ds-tag ds-engine-tag\">引擎证据</span> <span class=\"ds-tag ds-coach-tag\">教练说明</span>",
+      "css": ".ds-tag{display:inline-flex;align-items:center;white-space:nowrap;border:1px solid var(--border,#24314c);border-radius:9999px;padding:0.1rem 0.55rem;background:var(--panel-soft,#16223a);color:var(--muted,#93a1bd);font:400 0.72rem/1.3 -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Segoe UI\",Roboto,sans-serif}.ds-engine-tag{border-color:rgba(79,156,249,0.5);color:#a9cdfb}.ds-coach-tag{border-color:rgba(217,164,65,0.5);color:#eccb8a}"
+    },
+    {
+      "name": "分析面板",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "独立信息的外层容器，无投影。",
+      "html": "<section class=\"ds-panel\"><h2 class=\"ds-panel-title\">真人实战统计</h2><p class=\"ds-panel-note\">当前棋盘局面 · Lichess 有等级分对局</p></section>",
+      "css": ".ds-panel{background:var(--panel,#111a2b);color:var(--text,#e6ebf5);border:1px solid var(--border,#24314c);border-radius:0.75rem;padding:1rem;font-family:-apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Segoe UI\",Roboto,sans-serif}.ds-panel-title{margin:0;font-size:0.875rem;font-weight:600;line-height:1.25rem}.ds-panel-note{margin:0.25rem 0 0;color:var(--muted,#93a1bd);font-size:0.75rem;line-height:1.625}"
+    },
+    {
+      "name": "证据与解释",
+      "kind": "custom",
+      "description": "两种已有来源容器，共用左边线结构、使用不同来源色。",
+      "html": "<div class=\"ds-evidence\">引擎证据 · Stockfish</div><div class=\"ds-explanation\">教练说明</div>",
+      "css": ".ds-evidence,.ds-explanation{padding:0.75rem;border-radius:0 0.375rem 0.375rem 0;color:var(--text,#e6ebf5);font:400 0.875rem/1.25rem -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Segoe UI\",Roboto,sans-serif}.ds-evidence{border-left:3px solid var(--engine,#4f9cf9);background:rgba(79,156,249,0.06)}.ds-explanation{margin-top:0.75rem;border-left:3px solid var(--coach,#d9a441);background:rgba(217,164,65,0.06)}"
+    },
+    {
+      "name": "页首文字导航",
+      "kind": "nav",
+      "description": "现有应用的文字导航。示例链接仅作视觉预览。",
+      "html": "<nav class=\"ds-nav\"><a href=\"#import\">导入对局</a><a href=\"#profile\">个人档案</a></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:1rem;font:400 0.875rem/1.25rem -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Segoe UI\",Roboto,sans-serif}.ds-nav a{color:var(--muted,#93a1bd);text-decoration:none}.ds-nav a:hover{color:#fff}.ds-nav a:focus-visible{outline:auto}"
+    },
+    {
+      "name": "走法结果比例",
+      "kind": "custom",
+      "description": "示例比例仅展示排版；每行的白胜、和棋、黑胜标签均纵向排列。",
+      "html": "<div class=\"ds-outcomes\"><div class=\"ds-bar\" aria-hidden=\"true\"><span class=\"ds-white\"></span><span class=\"ds-draw\"></span><span class=\"ds-black\"></span></div><div class=\"ds-results\"><span>白胜 45.0%</span><span>和棋 10.0%</span><span>黑胜 45.0%</span></div></div>",
+      "css": ".ds-outcomes{color:var(--text,#e6ebf5);font:400 0.75rem/1rem -apple-system,BlinkMacSystemFont,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"Segoe UI\",Roboto,sans-serif;font-variant-numeric:tabular-nums}.ds-bar{display:flex;height:0.625rem;overflow:hidden;border:1px solid var(--muted,#93a1bd);border-radius:0.25rem}.ds-white{width:45%;background:var(--color-slate-100,oklch(96.8% 0.007 247.896))}.ds-draw{width:10%;background:var(--color-slate-400,oklch(70.4% 0.04 256.788))}.ds-black{width:45%;background:var(--color-slate-800,oklch(27.9% 0.041 260.031))}.ds-results{display:grid;grid-template-columns:1fr;gap:0.25rem;margin-top:0.375rem}"
+    }
+  ],
+  "narrative": {
+    "northStar": "证据优先的复盘工作台",
+    "overview": "这是对现有前端的记录，主要证据来自复盘页、引擎证据、教练解释和真人统计面板。沿用深蓝底色、紧凑中文排版及有边界的分析区域；新增内容应接入这一界面，而不另建视觉风格。\n\n界面让用户在棋盘、着法和解释之间核对信息。颜色帮助辨认来源，正文和数值承担内容。页面的功能标题使用现有中文系统字体，不引入展示性大标题。",
+    "keyCharacteristics": [
+      "深蓝背景与逐层稍亮的容器。",
+      "蓝色标识引擎证据，金色标识教练说明。",
+      "等宽棋谱、对齐数字和明确的统计标签。",
+      "紧凑控件与可见边框，优先阅读和操作。"
+    ],
+    "rules": [
+      {
+        "name": "The Source Color Rule",
+        "body": "引擎证据和教练说明使用各自的颜色及文字来源；真人历史结果使用独立的白、灰、深色比例条。",
+        "section": "colors"
+      },
+      {
+        "name": "The Written Meaning Rule",
+        "body": "颜色旁保留可读文字；结果始终写出白胜、和棋、黑胜，不依赖用户推断条段含义。",
+        "section": "typography"
+      }
+    ],
+    "dos": [
+      "**Do** 沿用深蓝容器及引擎蓝、教练金的来源含义。",
+      "**Do** 在统计中同时呈现样本量、文字结果和比例条。",
+      "**Do** 让同类走法行保持相同的结果顺序和排版。",
+      "**Do** 保留表单标签与真人统计区域的键盘焦点。"
+    ],
+    "donts": [
+      "**Don't** 把真人历史结果渲染成引擎评分或教练判断。",
+      "**Don't** 用颜色替代白胜、和棋、黑胜文字。",
+      "**Don't** 为这一局部功能引入渐变、发光或奖励动画。"
+    ]
+  }
+}
