@@ -39,6 +39,14 @@ class ExplorerCacheEntry(Base):
     payload = Column(JSON, nullable=False)
 
 
+class Study(Base):
+    """Separate from review replacement: re-analysis must not erase user branches."""
+    __tablename__ = "studies"
+    game_id = Column(String(64), primary_key=True)
+    revision = Column(Integer, nullable=False, default=1)
+    payload = Column(JSON, nullable=False)
+
+
 def _utcnow() -> datetime:
     return datetime.utcnow()
 

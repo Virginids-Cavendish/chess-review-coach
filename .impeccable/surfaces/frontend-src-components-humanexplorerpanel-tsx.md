@@ -2,7 +2,7 @@
 version: 1
 slug: "frontend-src-components-humanexplorerpanel-tsx"
 primary_target: "frontend/src/components/HumanExplorerPanel.tsx"
-related_targets: ["frontend/src/app/games/[id]/page.tsx","route:/games/[id]"]
+related_targets: ["frontend/src/app/games/[id]/page.tsx","route:/games/[id]","frontend/src/components/AnalysisWorkbench.tsx"]
 ---
 
 # 真人实战统计 · 局部界面说明
@@ -13,7 +13,8 @@ related_targets: ["frontend/src/app/games/[id]/page.tsx","route:/games/[id]"]
 
 ## 内容与动作
 
-- 面板位于棋盘、走子控制和引擎推荐开关下方；宽屏留在棋盘列，手机端随页面堆叠。
+- 面板位于分析工作台右列的「真人数据库」标签内，位于实时引擎和候选线下方；手机端整个分析列堆叠到棋盘下方。
+- 外层分析区已提供边框与圆角，嵌入统计去掉重复的边框、圆角及内边距。数据库内容在最大高（480px）的区域中纵向滚动。
 - 标题和刷新操作在顶部；等级分与用时保持两列；月份范围默认收起。
 - 先显示整体样本数及白胜、和棋、黑胜，再显示常见走法表。表内依次是走法和样本、使用率、结果比例；每行结果文字都纵向排列，不因长短混用布局。
 - 表格允许横向溢出时滚动；结果列保留最小宽度（8rem）。棋谱和数字对齐，实战及引擎走法附文字标记。
@@ -32,4 +33,4 @@ related_targets: ["frontend/src/app/games/[id]/page.tsx","route:/games/[id]"]
 
 ## 验证与未决项
 
-实现依据：该组件、复盘页及现有全局样式。桌面（1440px）与手机（390px）的完成截图已核对：output/playwright/lichess-desktop-panel-final.png、lichess-mobile-panel-final.png、lichess-desktop-final.png、lichess-mobile-final.png。这些是本次检查产物路径，不是运行依赖。完成评审结论为 ship；本范围没有未决视觉决策。
+当前布局依据：该组件、AnalysisWorkbench、复盘页及全局样式。新位置的手机证据为 `output/playwright/workbench-mobile-database.png`；工作台整体证据见对应局部说明。旧 `lichess-*-final.png` 仅记录原版统计内部排版，不再代表当前面板位置。截图是检查产物，不是运行依赖；完成评审结论为 ship，本范围没有未决视觉决策。

@@ -19,6 +19,7 @@ from fastapi.responses import JSONResponse
 
 from api.routes import router
 from api.lichess import router as lichess_router
+from api.workbench import router as workbench_router, shutdown_live
 from api.service import get_service
 from config import settings
 from engine.errors import EngineError
@@ -43,6 +44,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         "DeepSeek configured" if service.coach.llm_available else "not configured (rules-only mode)",
     )
     yield
+    shutdown_live()
     service.shutdown()
 
 
@@ -68,6 +70,7 @@ def create_app() -> FastAPI:
 
     app.include_router(router)
     app.include_router(lichess_router)
+    app.include_router(workbench_router)
 
     @app.exception_handler(EngineError)
     async def engine_error_handler(_request: Request, exc: EngineError) -> JSONResponse:
